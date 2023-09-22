@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      body{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.141.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.141.0/examples/jsm/"
+    }
+  }
+  </script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+// 1. 장면을 만들고 
+// 2. 브라우저에 렌더링
+
+let scene = new THREE.Scene();
+let renderer = new THREE.WebGLRenderer({
+  // 지정한 canvas에 띄우기
+  canvas : document.querySelector('#canvas'),
+  
+  // 계단 현상 완화
+  antialias : true
+});
+renderer.setSize( window.innerWidth/2, window.innerHeight/2 );
+document.body.appendChild( renderer.domElement );
+//모델의 원래색으로 앤코딩
+renderer.outputEncoding = THREE.sRGBEncoding;
+// 배경색
+// scene.background = new THREE.Color('white');
+// 광원
+let light = new THREE.DirectionalLight(0xffff00,10);
+scene.add(light)
+// 카메라 설정
+let camera = new THREE.PerspectiveCamera(50,1);
+
+// 마우스 컨트롤
+const controls = new OrbitControls( camera, renderer.domElement );
+camera.position.set(0,3,3)
+controls.update();
+
+let loader = new GLTFLoader();
+loader.load('./bird3DModel/scene.gltf', function(gltf){
+  scene.add(gltf.scene);
+
+  function animate(){
+    requestAnimationFrame(animate)
+    // gltf.scene.rotation.y -= 0.03;
+    controls.update();
+    renderer.render(scene, camera);
+    //마우스로 컨트롤 : OrbitControl
+  }
+  animate()
+});
+
+
+
+</script>
+</body>
+</html>
